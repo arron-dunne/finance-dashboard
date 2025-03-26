@@ -1,8 +1,13 @@
-name: Build React app with Vite
+name: build and deploy
 
 on:
   push:
     branches: main
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
   # Build job
