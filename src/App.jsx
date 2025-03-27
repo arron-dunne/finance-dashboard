@@ -8,6 +8,12 @@ function App() {
     )
 }
 
+function Dashboard() {
+    return (
+        <p>Dashboard</p>
+    )
+}
+
 function Navbar() {
     return (
         <div className="bg-blue-400 w-full p-6 flex items-center justify-between">
