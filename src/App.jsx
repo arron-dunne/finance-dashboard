@@ -1,10 +1,21 @@
+import { Layout } from "./Layout"
+import { Routes, Route } from "react-router"
 
-function App() {
-
+export default function App() {
     return (
-        <div className="w-screen h-screen box-border">
-            <Navbar />
-        </div>
+        <Layout>
+            <Routes>
+                <Route path='/finance-dashboard/' element={<Dashboard />} />
+                <Route path="/finance-dashboard/about" element={<About />} />
+                <Route path='/finance-dashboard/transactions' element={<Transactions />} />
+            </Routes>
+        </Layout>
+    )
+}
+
+function Transactions() {
+    return (
+        <p>Transactions</p>
     )
 }
 
@@ -14,32 +25,8 @@ function Dashboard() {
     )
 }
 
-function Navbar() {
+function About() {
     return (
-        <div className="bg-blue-400 w-full p-6 flex items-center justify-between">
-            <p className="text-3xl text-center text-white font-bold">Finance Tracker</p>
-            <Links />
-        </div>
+        <p>About Page</p>
     )
 }
-
-function Links() {
-    return (
-        <div className="flex gap-4">
-            <Link name='Dashboard'/>
-            <Link name='Breakdown'/>
-            <Link name='Compare'/>
-            <Link name='Transactions'/>
-        </div>
-    )
-}
-
-function Link({name}) {
-    return (
-        <div className="bg-blue-100 text-blue-500 rounded-full px-3 py-1">
-            {name}
-        </div>
-    )
-}
-
-export default App
