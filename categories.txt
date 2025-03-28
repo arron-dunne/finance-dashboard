@@ -1,0 +1,38 @@
+INCOME
+------
+
+- Wage: from work and jobs
+- Benefits
+- Loans
+- Investments
+- Interest
+- Gift
+- Other
+
+SPENDING
+--------
+
+- Rent / Accomodation
+- Utilities
+- Loans
+- Subscriptions
+- Health & Fitness
+- Holidays
+- Groceries
+- Food & Drinks - Bars, Cafes, Restaurants
+- Transport
+- Shopping
+- Giving
+- Savings
+- Investments
+- Tax
+
+OTHER 
+----- 
+
+- Transfers
+- Cash Withdrawl
+- Fees
+- Business Expense
+- Other
+

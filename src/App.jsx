@@ -1,5 +1,7 @@
-import { Layout } from "./Layout"
 import { Routes, Route } from "react-router"
+import { Layout } from "./Layout"
+import { About } from "./About"
+import { Transactions } from "./Transactions"
 
 export default function App() {
     return (
@@ -13,20 +15,8 @@ export default function App() {
     )
 }
 
-function Transactions() {
-    return (
-        <p>Transactions</p>
-    )
-}
-
 function Dashboard() {
     return (
         <p>Dashboard</p>
-    )
-}
-
-function About() {
-    return (
-        <p>About Page</p>
     )
 }
