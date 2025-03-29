@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router"
 import { Layout } from "./Layout"
+import { Dashboard } from "./Dashboard"
 import { About } from "./About"
 import { Transactions } from "./Transactions"
 
@@ -12,11 +13,5 @@ export default function App() {
                 <Route path='/finance-dashboard/transactions' element={<Transactions />} />
             </Routes>
         </Layout>
-    )
-}
-
-function Dashboard() {
-    return (
-        <p>Dashboard</p>
     )
 }
