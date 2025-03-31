@@ -1,0 +1,23 @@
+Shopping                -> Shopping
+Mortgage & Rent         -> Rent
+Restaurants             -> Eating & Drinking Out
+Credit Card Payment     -> Credit Card Payment
+Movies & DVDs           -> Entertainment
+Home Improvement        -> Household
+Utilities               -> Utilities
+Music                   -> Subscriptions
+Mobile Phone            -> Subscriptions
+Gas & Fuel              -> Transport
+Groceries               -> Groceries
+Paycheck                -> Paycheck
+Fast Food               -> Eating & Drinking Out
+Coffee Shops            -> Eating & Drinking Out
+Internet                -> Utilities
+Haircut                 -> Lifestyle
+Alcohol & Bars          -> Eating & Drinking Out
+Auto Insurance          -> Insurance
+Entertainment           -> Entertainment
+Food & Dining           -> Eating & Drinking Out
+Television              -> Subscriptions
+Electronics & Software  -> Shopping
+

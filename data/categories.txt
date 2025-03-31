@@ -1,7 +1,7 @@
 INCOME
 ------
 
-- Wage: from work and jobs
+- Paycheck: from work and jobs
 - Benefits
 - Loans
 - Investments
@@ -15,8 +15,10 @@ SPENDING
 - Rent / Accomodation
 - Utilities
 - Loans
+- Household
 - Subscriptions
-- Health & Fitness
+- Lifestyle
+- Medical
 - Holidays
 - Groceries
 - Food & Drinks - Bars, Cafes, Restaurants
@@ -35,4 +37,3 @@ OTHER
 - Fees
 - Business Expense
 - Other
-
