@@ -36,18 +36,42 @@ export function Dashboard() {
         cat.value = (-cat.value).toFixed(2)
     })
 
+    // sort by value
+    income.sort((a, b) => b.value - a.value)
+    outgoings.sort((a, b) => b.value - a.value)
+
     return (
-        <>
-        <PieChart
-            series={[{ data: income }]}
-            width={500}
-            // height={300}
-            />
-        <PieChart
-            series={[{ data: outgoings }]}
-            width={500}
-            // height={300}
-            />
-        </>
+        <div className='p-8 flex justify-center gap-8 md:gap-20'>
+            <div className='flex flex-col gap-8 items-center'>
+                <p className='text-lg font-bold underline'>Income</p>
+                <div className='w-72 h-72 sm:w-80 sm:h-80 md:w-96 md:h-96'>
+                    <PieChart
+                        series={[{ data: income }]}
+                        slotProps={{ legend: { hidden: true}}}
+                        margin={{
+                            left: 0,
+                            right: 0,
+                            top: 0,
+                            bottom: 0,
+                        }}
+                    />
+                </div>
+            </div>
+            <div className='flex flex-col gap-8 items-center'>
+                <p className='text-lg font-bold underline'>Outgoings</p>
+                <div className='w-72 h-72 sm:w-80 sm:h-80 md:w-96 md:h-96'>
+                    <PieChart
+                        series={[{ data: outgoings }]}
+                        slotProps={{ legend: { hidden: true}}}
+                        margin={{
+                            left: 0,
+                            right: 0,
+                            top: 0,
+                            bottom: 0,
+                        }}
+                    />
+                </div>
+            </div>
+        </div>
     )
 }
