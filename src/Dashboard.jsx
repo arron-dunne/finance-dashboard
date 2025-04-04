@@ -1,7 +1,13 @@
 import { PieChart } from '@mui/x-charts/PieChart'
 import data from './data.json'
+import { useState } from 'react'
 
 export function Dashboard() {
+
+    // const [dateRange, setDateRange] = useState({
+    //     start:,
+    //     end:
+    // })
 
     // Sum category spending
     const income = []
@@ -48,8 +54,9 @@ export function Dashboard() {
     })
 
     return (
-        <div className='p-8'>
-            <div className='flex justify-center gap-8 md:gap-20 mb-10'>
+        <div className='p-8 flex flex-col gap-8'>
+            <DateRange />
+            <div className='flex justify-center gap-8 md:gap-20'>
                 <div className='flex flex-col gap-8 items-center'>
                     <p className='text-lg font-bold underline'>Income</p>
                     <div className='w-72 h-72 sm:w-80 sm:h-80 md:w-96 md:h-96'>
@@ -84,6 +91,19 @@ export function Dashboard() {
             <div className='flex justify-center'>
                 <DashboardTable income={income} outgoings={outgoings} totals={totals} />
             </div>
+        </div>
+    )
+}
+
+function DateRange() {
+    return(
+        <div className='flex justify-center'>
+            <div className='w-20 p-2 bg-blue-300 text-center'>Day</div>
+            <div className='w-20 p-2 bg-blue-300 text-center'>Week</div>
+            <div className='w-20 p-2 bg-blue-300 text-center'>Month</div>
+            <div className='w-20 p-2 bg-blue-300 text-center'>Year</div>
+            <div className='w-20 p-2 bg-blue-300 text-center'>Custom</div>
+
         </div>
     )
 }

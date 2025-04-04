@@ -1,6 +1,7 @@
 import csv
 import argparse
 import json
+from datetime import datetime
 
 parser = argparse.ArgumentParser()
 
@@ -37,17 +38,17 @@ with open(args.filename) as f:
 
     reader = csv.DictReader(f)
 
-    count = 0
+    # count = 0
 
-    categories = []
+    # categories = []
 
-    accounts = []
+    # accounts = []
 
     output = []
 
     for row in reader:
         
-        count += 1
+        # count += 1
 
         # if row['Category'] not in categories:
         #     categories.append(row['Category'])
@@ -60,8 +61,10 @@ with open(args.filename) as f:
 
         amount = float(row["Amount"]) if row["Transaction Type"] == "credit" else -float(row["Amount"])
 
+        date = datetime.strptime(row["Date"], "%m/%d/%Y")
+
         output.append({
-            "date": row["Date"],
+            "date": date.strftime("%d/%m/%Y"),
             "account": row["Account Name"],
             "currency": "USD",
             "description": row["Description"],
