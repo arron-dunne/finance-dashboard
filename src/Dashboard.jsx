@@ -20,12 +20,8 @@ export function Dashboard() {
             return cur > max ? cur : max
 
         }))
-
-        console.log(endDate)
         
         const startDate = new Date(Date.UTC(endDate.getFullYear(), endDate.getMonth(), 1))
-        
-        console.log(startDate)
 
         setDateRange({
             selection: dateRange.selection,
@@ -85,8 +81,6 @@ export function Dashboard() {
         cat.value = (-cat.value).toFixed(2)
     })
 
-    // console.log(dateRange)
-
     return (
         <div className='p-8 flex flex-col gap-8'>
             <DateRange                     
@@ -138,12 +132,17 @@ export function Dashboard() {
 
 function DateRange({ dateRange, setDateRange }) {
 
-    // console.log(dateRange)
-
     const monthNames = [
         'January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'
     ]
+
+    const weekFormat = new Intl.DateTimeFormat('en-US', {
+        // weekday: 'short',
+        // year: '2-digit',
+        month: 'short',
+        day: 'numeric'
+    })
     
     let label = ''
 
@@ -152,7 +151,8 @@ function DateRange({ dateRange, setDateRange }) {
             label = dateRange.start.toDateString()
             break
         case 'Week':
-            label = `${dateRange.start.getDate()}/${dateRange.start.getMonth() + 1}/${dateRange.start.getFullYear()} - ${dateRange.end.getDate()}/${dateRange.end.getMonth() + 1}/${dateRange.end.getFullYear()}`
+            // label = `${dateRange.start.getDate()}/${dateRange.start.getMonth() + 1}/${dateRange.start.getFullYear()} - ${dateRange.end.getDate()}/${dateRange.end.getMonth() + 1}/${dateRange.end.getFullYear()}`
+            label = `${weekFormat.format(dateRange.start)} - ${weekFormat.format(dateRange.end)}`
             break
         case 'Month':
             label = `${monthNames[dateRange.start.getMonth()]} ${dateRange.start.getFullYear()}`
@@ -167,26 +167,21 @@ function DateRange({ dateRange, setDateRange }) {
 
     function updateDateRange(selection) {
         
-        let start
-        let end
-        
-        console.log(dateRange)
+        let start = new Date(dateRange.start)
+        let end = new Date(dateRange.end)
 
         switch (selection) {
             case 'Day':
-                start = dateRange.end
-                end = dateRange.end
+                start = end
+                end = end
                 break
             case 'Week':
-                start = new Date(dateRange.end)
-                start.setDate(start.getDate() - start.getDay())
-                end = new Date(start)
+                start.setDate(end.getDate() - end.getDay())
                 end.setDate(start.getDate() + 6)
                 break
             case 'Month':
-                start = new Date(dateRange.end)
+                start.setMonth(end.getMonth())
                 start.setDate(1)
-                end = new Date(start)
                 end.setMonth(end.getMonth() + 1)
                 end.setDate(0)
                 break
@@ -204,6 +199,67 @@ function DateRange({ dateRange, setDateRange }) {
         })
     }
 
+    function toggleLeft() {
+        let start = new Date(dateRange.start)
+        let end = new Date(dateRange.end)
+
+        switch (dateRange.selection) {
+            case 'Day':
+                start.setDate(start.getDate() - 1)
+                end.setDate(end.getDate() - 1)
+                break
+            case 'Week':
+                start.setDate(start.getDate() - 7)
+                end.setDate(end.getDate() - 7)
+                break
+            case 'Month':
+                start.setMonth(start.getMonth() - 1)
+                end.setMonth(end.getMonth() - 1)
+                break
+            case 'Year':
+                start.setFullYear(start.getFullYear() - 1)
+                end.setFullYear(end.getFullYear() - 1)
+                break
+        }
+
+        setDateRange({
+            selection: dateRange.selection,
+            start: start,
+            end: end
+        })
+    }
+    
+    function toggleRight() {
+
+        let start = new Date(dateRange.start)
+        let end = new Date(dateRange.end)
+    
+        switch (dateRange.selection) {
+            case 'Day':
+                start.setDate(start.getDate() + 1)
+                end.setDate(end.getDate() + 1)
+                break
+            case 'Week':
+                start.setDate(start.getDate() + 7)
+                end.setDate(end.getDate() + 7)
+                break
+            case 'Month':
+                start.setMonth(start.getMonth() + 1)
+                end.setMonth(end.getMonth() + 1)
+                break
+            case 'Year':
+                start.setFullYear(start.getFullYear() + 1)
+                end.setFullYear(end.getFullYear() + 1)
+                break
+        }
+    
+        setDateRange({
+            selection: dateRange.selection,
+            start: start,
+            end: end
+        })
+    }
+
     return(
         <div>
             <div className='flex justify-center'>
@@ -214,11 +270,11 @@ function DateRange({ dateRange, setDateRange }) {
                 <DateRangeButton name='Custom' selection={dateRange.selection} updateDateRange={updateDateRange}/>
             </div>
             <div className='flex justify-center items-center mt-4 gap-4'>
-                <button className='w-8 h-8 rounded-full bg-gray-200 flex justify-center items-center cursor-pointer hover:brightness-90 active:brightness-75'>
+                <button className='w-8 h-8 rounded-full bg-gray-200 flex justify-center items-center cursor-pointer hover:brightness-90 active:brightness-75' onClick={toggleLeft}>
                     <span className="material-symbols-outlined">chevron_left</span>
                 </button>
-                <p>{ label }</p>
-                <button className='w-8 h-8 rounded-full bg-gray-200 flex justify-center items-center cursor-pointer hover:brightness-90 active:brightness-75'>
+                <p className='w-48 text-center'>{ label }</p>
+                <button className='w-8 h-8 rounded-full bg-gray-200 flex justify-center items-center cursor-pointer hover:brightness-90 active:brightness-75' onClick={toggleRight}>
                     <span className="material-symbols-outlined">chevron_right</span>
                 </button>
             </div>
