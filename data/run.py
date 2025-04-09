@@ -64,7 +64,7 @@ with open(args.filename) as f:
         date = datetime.strptime(row["Date"], "%m/%d/%Y")
 
         output.append({
-            "date": date.strftime("%d/%m/%Y"),
+            "date": date.strftime("%Y-%m-%d"),
             "account": row["Account Name"],
             "currency": "USD",
             "description": row["Description"],

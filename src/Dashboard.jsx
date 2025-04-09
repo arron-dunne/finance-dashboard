@@ -1,13 +1,38 @@
 import { PieChart } from '@mui/x-charts/PieChart'
 import data from './data.json'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export function Dashboard() {
 
-    // const [dateRange, setDateRange] = useState({
-    //     start:,
-    //     end:
-    // })
+    const [dateRange, setDateRange] = useState({
+        selection: 'Month',
+        start: new Date(0),
+        end: new Date(Date.now())
+    })
+
+    // set initial date range to the month of the last transaction
+    useEffect(() => {
+
+        const dates = data.map(transcation => Date.parse(transcation.date))
+
+        const endDate = new Date(dates.reduce((max, cur) => {
+            
+            return cur > max ? cur : max
+
+        }))
+
+        console.log(endDate)
+        
+        const startDate = new Date(Date.UTC(endDate.getFullYear(), endDate.getMonth(), 1))
+        
+        console.log(startDate)
+
+        setDateRange({
+            selection: dateRange.selection,
+            start: startDate,
+            end: endDate
+        })
+    }, [])
 
     // Sum category spending
     const income = []
@@ -16,6 +41,13 @@ export function Dashboard() {
 
     data.forEach(transaction => {
 
+        const date = Date.parse(transaction.date)
+
+        // skip if not in date range
+        if (date < dateRange.start || date > dateRange.end) {
+            return
+        }
+        
         let chart = outgoings
 
         if (transaction.amount > 0) {
@@ -35,7 +67,7 @@ export function Dashboard() {
 
     // sort
     income.sort((a, b) => b.value - a.value)
-    outgoings.sort((a, b) => b.value - a.value)
+    outgoings.sort((a, b) => a.value - b.value)
 
     // total
     const incomeTotal = income.reduce((accumulator, currentValue) => accumulator + currentValue.value, 0)
@@ -53,9 +85,14 @@ export function Dashboard() {
         cat.value = (-cat.value).toFixed(2)
     })
 
+    // console.log(dateRange)
+
     return (
         <div className='p-8 flex flex-col gap-8'>
-            <DateRange />
+            <DateRange                     
+                dateRange={dateRange} 
+                setDateRange={setDateRange}
+            />
             <div className='flex justify-center gap-8 md:gap-20'>
                 <div className='flex flex-col gap-8 items-center'>
                     <p className='text-lg font-bold underline'>Income</p>
@@ -89,21 +126,111 @@ export function Dashboard() {
                 </div>
             </div>
             <div className='flex justify-center'>
-                <DashboardTable income={income} outgoings={outgoings} totals={totals} />
+                <DashboardTable 
+                    income={income} 
+                    outgoings={outgoings} 
+                    totals={totals} 
+                />
             </div>
         </div>
     )
 }
 
-function DateRange() {
-    return(
-        <div className='flex justify-center'>
-            <div className='w-20 p-2 bg-blue-300 text-center'>Day</div>
-            <div className='w-20 p-2 bg-blue-300 text-center'>Week</div>
-            <div className='w-20 p-2 bg-blue-300 text-center'>Month</div>
-            <div className='w-20 p-2 bg-blue-300 text-center'>Year</div>
-            <div className='w-20 p-2 bg-blue-300 text-center'>Custom</div>
+function DateRange({ dateRange, setDateRange }) {
 
+    // console.log(dateRange)
+
+    const monthNames = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+    ]
+    
+    let label = ''
+
+    switch (dateRange.selection) {
+        case 'Day':
+            label = dateRange.start.toDateString()
+            break
+        case 'Week':
+            label = `${dateRange.start.getDate()}/${dateRange.start.getMonth() + 1}/${dateRange.start.getFullYear()} - ${dateRange.end.getDate()}/${dateRange.end.getMonth() + 1}/${dateRange.end.getFullYear()}`
+            break
+        case 'Month':
+            label = `${monthNames[dateRange.start.getMonth()]} ${dateRange.start.getFullYear()}`
+            break
+        case 'Year':
+            label = `${dateRange.start.getFullYear()}`
+            break
+        case 'Custom':
+            label = `${dateRange.start.getDate()}/${dateRange.start.getMonth() + 1}/${dateRange.start.getFullYear()} - ${dateRange.end.getDate()}/${dateRange.end.getMonth() + 1}/${dateRange.end.getFullYear()}`
+            break
+    }
+
+    function updateDateRange(selection) {
+        
+        let start
+        let end
+        
+        console.log(dateRange)
+
+        switch (selection) {
+            case 'Day':
+                start = dateRange.end
+                end = dateRange.end
+                break
+            case 'Week':
+                start = new Date(dateRange.end)
+                start.setDate(start.getDate() - start.getDay())
+                end = new Date(start)
+                end.setDate(start.getDate() + 6)
+                break
+            case 'Month':
+                start = new Date(dateRange.end)
+                start.setDate(1)
+                end = new Date(start)
+                end.setMonth(end.getMonth() + 1)
+                end.setDate(0)
+                break
+            case 'Year':
+                const year = dateRange.end.getFullYear()
+                start = new Date(year, 0, 1)
+                end = new Date(year, 11, 31)
+                break
+        }
+
+        setDateRange({
+            selection: selection,
+            start: start,
+            end: end
+        })
+    }
+
+    return(
+        <div>
+            <div className='flex justify-center'>
+                <DateRangeButton name='Day' selection={dateRange.selection} updateDateRange={updateDateRange}/>
+                <DateRangeButton name='Week' selection={dateRange.selection} updateDateRange={updateDateRange}/>
+                <DateRangeButton name='Month' selection={dateRange.selection} updateDateRange={updateDateRange}/>
+                <DateRangeButton name='Year' selection={dateRange.selection} updateDateRange={updateDateRange}/>
+                <DateRangeButton name='Custom' selection={dateRange.selection} updateDateRange={updateDateRange}/>
+            </div>
+            <div className='flex justify-center items-center mt-4 gap-4'>
+                <button className='w-8 h-8 rounded-full bg-gray-200 flex justify-center items-center cursor-pointer hover:brightness-90 active:brightness-75'>
+                    <span className="material-symbols-outlined">chevron_left</span>
+                </button>
+                <p>{ label }</p>
+                <button className='w-8 h-8 rounded-full bg-gray-200 flex justify-center items-center cursor-pointer hover:brightness-90 active:brightness-75'>
+                    <span className="material-symbols-outlined">chevron_right</span>
+                </button>
+            </div>
+        </div>
+    )
+}
+
+function DateRangeButton({ name, selection, updateDateRange }) {
+    return (
+        <div className={`w-20 p-2 text-center cursor-pointer hover:brightness-90 active:brightness-75 ${selection === name ? 'bg-blue-300' : 'bg-gray-200'}`}
+            onClick={() => updateDateRange(name)}>
+            { name }
         </div>
     )
 }
