@@ -1,6 +1,6 @@
 import { PieChart } from '@mui/x-charts/PieChart'
 import data from './data.json'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 export function Dashboard() {
 
@@ -50,7 +50,7 @@ export function Dashboard() {
 
         // check if category already exists, otherwise create it
         const cat = chart.find(cat => cat.label === transaction.category)
-        
+
         if (cat) {
             cat.value += transaction.amount
         }
@@ -128,6 +128,9 @@ function DateRange({ dateRange, setDateRange }) {
 
     const [label, setLabel] = useState('')
 
+    const fromDateInputRef = useRef(null)
+    const toDateInputRef = useRef(null)
+
     useEffect(() => {
         updateLabel(dateRange)
     }, [dateRange])
@@ -189,6 +192,10 @@ function DateRange({ dateRange, setDateRange }) {
                 start = new Date(year, 0, 1)
                 end = new Date(year, 11, 31)
                 break
+            case 'Custom':
+                start = new Date(fromDateInputRef.current?.value)
+                end = new Date(toDateInputRef.current?.value)
+                break
         }
 
         setDateRange({
@@ -200,7 +207,7 @@ function DateRange({ dateRange, setDateRange }) {
 
 
     function toggleLeft() {
-        
+
         let start = new Date(dateRange.start)
         let end = new Date(dateRange.end)
 
@@ -270,15 +277,28 @@ function DateRange({ dateRange, setDateRange }) {
                 <DateRangeButton name='Year' selection={dateRange.selection} updateDateRange={updateDateRange} />
                 <DateRangeButton name='Custom' selection={dateRange.selection} updateDateRange={updateDateRange} />
             </div>
-            <div className='flex justify-center items-center mt-4 gap-4'>
-                <button className='w-8 h-8 rounded-full bg-gray-200 flex justify-center items-center cursor-pointer hover:brightness-90 active:brightness-75' onClick={toggleLeft}>
-                    <span className="material-symbols-outlined">chevron_left</span>
-                </button>
-                <p className='w-48 text-center'>{label}</p>
-                <button className='w-8 h-8 rounded-full bg-gray-200 flex justify-center items-center cursor-pointer hover:brightness-90 active:brightness-75' onClick={toggleRight}>
-                    <span className="material-symbols-outlined">chevron_right</span>
-                </button>
-            </div>
+            { dateRange.selection === 'Custom' ?
+                <div className='flex flex-col justify-center items-center mt-4 gap-4'>
+                    <div className='flex gap-4'>
+                        <p>From:</p>
+                        <input ref={fromDateInputRef} type="date" onChange={() => updateDateRange('Custom')}/>
+                    </div>
+                    <div className='flex gap-4'>
+                        <p>To:</p>
+                        <input ref={toDateInputRef} type="date" onChange={() => updateDateRange('Custom')}/>
+                    </div>
+                </div>
+                :
+                <div className='flex justify-center items-center mt-4 gap-4'>
+                    <button className='w-8 h-8 rounded-full bg-gray-200 flex justify-center items-center cursor-pointer hover:brightness-90 active:brightness-75' onClick={toggleLeft}>
+                        <span className="material-symbols-outlined">chevron_left</span>
+                    </button>
+                    <p className='w-48 text-center'>{label}</p>
+                    <button className='w-8 h-8 rounded-full bg-gray-200 flex justify-center items-center cursor-pointer hover:brightness-90 active:brightness-75' onClick={toggleRight}>
+                        <span className="material-symbols-outlined">chevron_right</span>
+                    </button>
+                </div>
+            }
         </div>
     )
 }
