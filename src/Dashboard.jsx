@@ -15,24 +15,21 @@ export function Dashboard() {
 
         const dates = data.map(transcation => Date.parse(transcation.date))
 
-        const endDate = new Date(dates.reduce((max, cur) => {
-            
-            return cur > max ? cur : max
+        const end = new Date(dates.reduce((max, cur) => cur > max ? cur : max))
 
-        }))
-        
-        const startDate = new Date(Date.UTC(endDate.getFullYear(), endDate.getMonth(), 1))
+        const start = new Date(end)
+
+        start.setDate(1)
 
         setDateRange({
-            selection: dateRange.selection,
-            start: startDate,
-            end: endDate
+            selection: 'Month',
+            start: start,
+            end: end
         })
     }, [])
 
     // Sum category spending
     const income = []
-
     const outgoings = []
 
     data.forEach(transaction => {
@@ -43,21 +40,22 @@ export function Dashboard() {
         if (date < dateRange.start || date > dateRange.end) {
             return
         }
-        
+
+        // set the right chart (outgoings or income)
         let chart = outgoings
 
         if (transaction.amount > 0) {
             chart = income
         }
 
-        if (chart.find(cat => cat.label === transaction.category)) {
-            chart.find(cat => cat.label === transaction.category).value += transaction.amount
+        // check if category already exists, otherwise create it
+        const cat = chart.find(cat => cat.label === transaction.category)
+        
+        if (cat) {
+            cat.value += transaction.amount
         }
         else {
-            chart.push({
-                label: transaction.category,
-                value: transaction.amount
-            })
+            chart.push({ label: transaction.category, value: transaction.amount })
         }
     })
 
@@ -66,25 +64,21 @@ export function Dashboard() {
     outgoings.sort((a, b) => a.value - b.value)
 
     // total
-    const incomeTotal = income.reduce((accumulator, currentValue) => accumulator + currentValue.value, 0)
-    const outgoingsTotal = outgoings.reduce((accumulator, currentValue) => accumulator + currentValue.value, 0)
+    const incomeTotal = income.reduce((acc, cur) => acc + cur.value, 0)
+    const outgoingsTotal = outgoings.reduce((acc, cur) => acc + cur.value, 0)
     const netTotal = incomeTotal + outgoingsTotal
 
     const totals = { incomeTotal, outgoingsTotal, netTotal }
 
     // round
-    income.forEach(cat => {
-        cat.value = cat.value.toFixed(2)
-    })
+    income.forEach(cat => { cat.value = cat.value.toFixed(2) })
+    outgoings.forEach(cat => { cat.value = (-cat.value).toFixed(2) })
 
-    outgoings.forEach(cat => {
-        cat.value = (-cat.value).toFixed(2)
-    })
 
     return (
         <div className='p-8 flex flex-col gap-8'>
-            <DateRange                     
-                dateRange={dateRange} 
+            <DateRange
+                dateRange={dateRange}
                 setDateRange={setDateRange}
             />
             <div className='flex justify-center gap-8 md:gap-20'>
@@ -120,10 +114,10 @@ export function Dashboard() {
                 </div>
             </div>
             <div className='flex justify-center'>
-                <DashboardTable 
-                    income={income} 
-                    outgoings={outgoings} 
-                    totals={totals} 
+                <DashboardTable
+                    income={income}
+                    outgoings={outgoings}
+                    totals={totals}
                 />
             </div>
         </div>
@@ -132,41 +126,46 @@ export function Dashboard() {
 
 function DateRange({ dateRange, setDateRange }) {
 
-    const monthNames = [
-        'January', 'February', 'March', 'April', 'May', 'June',
-        'July', 'August', 'September', 'October', 'November', 'December'
-    ]
+    const [label, setLabel] = useState('')
 
-    const weekFormat = new Intl.DateTimeFormat('en-US', {
-        // weekday: 'short',
-        // year: '2-digit',
-        month: 'short',
-        day: 'numeric'
-    })
-    
-    let label = ''
+    useEffect(() => {
+        updateLabel(dateRange)
+    }, [dateRange])
 
-    switch (dateRange.selection) {
-        case 'Day':
-            label = dateRange.start.toDateString()
-            break
-        case 'Week':
-            // label = `${dateRange.start.getDate()}/${dateRange.start.getMonth() + 1}/${dateRange.start.getFullYear()} - ${dateRange.end.getDate()}/${dateRange.end.getMonth() + 1}/${dateRange.end.getFullYear()}`
-            label = `${weekFormat.format(dateRange.start)} - ${weekFormat.format(dateRange.end)}`
-            break
-        case 'Month':
-            label = `${monthNames[dateRange.start.getMonth()]} ${dateRange.start.getFullYear()}`
-            break
-        case 'Year':
-            label = `${dateRange.start.getFullYear()}`
-            break
-        case 'Custom':
-            label = `${dateRange.start.getDate()}/${dateRange.start.getMonth() + 1}/${dateRange.start.getFullYear()} - ${dateRange.end.getDate()}/${dateRange.end.getMonth() + 1}/${dateRange.end.getFullYear()}`
-            break
+
+    // Update the label based on the date range selection
+    function updateLabel({ selection, start, end }) {
+
+        const monthFormat = new Intl.DateTimeFormat('en-US', {
+            month: 'long',
+            year: 'numeric'
+        })
+
+        const weekFormat = new Intl.DateTimeFormat('en-US', {
+            day: 'numeric',
+            month: 'short'
+        })
+
+        switch (selection) {
+            case 'Day':
+                setLabel(end.toDateString())
+                break
+            case 'Week':
+                setLabel(`${weekFormat.format(start)} - ${weekFormat.format(end)}`)
+                break
+            case 'Month':
+                setLabel(monthFormat.format(start))
+                break
+            case 'Year':
+                setLabel(end.getFullYear())
+                break
+        }
     }
 
+
+    // Update the date range state and the label state
     function updateDateRange(selection) {
-        
+
         let start = new Date(dateRange.start)
         let end = new Date(dateRange.end)
 
@@ -186,7 +185,7 @@ function DateRange({ dateRange, setDateRange }) {
                 end.setDate(0)
                 break
             case 'Year':
-                const year = dateRange.end.getFullYear()
+                const year = end.getFullYear()
                 start = new Date(year, 0, 1)
                 end = new Date(year, 11, 31)
                 break
@@ -199,7 +198,9 @@ function DateRange({ dateRange, setDateRange }) {
         })
     }
 
+
     function toggleLeft() {
+        
         let start = new Date(dateRange.start)
         let end = new Date(dateRange.end)
 
@@ -228,12 +229,12 @@ function DateRange({ dateRange, setDateRange }) {
             end: end
         })
     }
-    
+
     function toggleRight() {
 
         let start = new Date(dateRange.start)
         let end = new Date(dateRange.end)
-    
+
         switch (dateRange.selection) {
             case 'Day':
                 start.setDate(start.getDate() + 1)
@@ -252,7 +253,7 @@ function DateRange({ dateRange, setDateRange }) {
                 end.setFullYear(end.getFullYear() + 1)
                 break
         }
-    
+
         setDateRange({
             selection: dateRange.selection,
             start: start,
@@ -260,20 +261,20 @@ function DateRange({ dateRange, setDateRange }) {
         })
     }
 
-    return(
+    return (
         <div>
             <div className='flex justify-center'>
-                <DateRangeButton name='Day' selection={dateRange.selection} updateDateRange={updateDateRange}/>
-                <DateRangeButton name='Week' selection={dateRange.selection} updateDateRange={updateDateRange}/>
-                <DateRangeButton name='Month' selection={dateRange.selection} updateDateRange={updateDateRange}/>
-                <DateRangeButton name='Year' selection={dateRange.selection} updateDateRange={updateDateRange}/>
-                <DateRangeButton name='Custom' selection={dateRange.selection} updateDateRange={updateDateRange}/>
+                <DateRangeButton name='Day' selection={dateRange.selection} updateDateRange={updateDateRange} />
+                <DateRangeButton name='Week' selection={dateRange.selection} updateDateRange={updateDateRange} />
+                <DateRangeButton name='Month' selection={dateRange.selection} updateDateRange={updateDateRange} />
+                <DateRangeButton name='Year' selection={dateRange.selection} updateDateRange={updateDateRange} />
+                <DateRangeButton name='Custom' selection={dateRange.selection} updateDateRange={updateDateRange} />
             </div>
             <div className='flex justify-center items-center mt-4 gap-4'>
                 <button className='w-8 h-8 rounded-full bg-gray-200 flex justify-center items-center cursor-pointer hover:brightness-90 active:brightness-75' onClick={toggleLeft}>
                     <span className="material-symbols-outlined">chevron_left</span>
                 </button>
-                <p className='w-48 text-center'>{ label }</p>
+                <p className='w-48 text-center'>{label}</p>
                 <button className='w-8 h-8 rounded-full bg-gray-200 flex justify-center items-center cursor-pointer hover:brightness-90 active:brightness-75' onClick={toggleRight}>
                     <span className="material-symbols-outlined">chevron_right</span>
                 </button>
@@ -286,7 +287,7 @@ function DateRangeButton({ name, selection, updateDateRange }) {
     return (
         <div className={`w-20 p-2 text-center cursor-pointer hover:brightness-90 active:brightness-75 ${selection === name ? 'bg-blue-300' : 'bg-gray-200'}`}
             onClick={() => updateDateRange(name)}>
-            { name }
+            {name}
         </div>
     )
 }
@@ -320,7 +321,7 @@ function DashboardTable({ income, outgoings, totals }) {
 
                 <tr className='border'>
                     <td className='px-4 py-2 font-bold'>Total</td>
-                    <td className='px-4 py-2 font-bold' style={{ 'color': totals.netTotal > 0 ? 'green' : 'red'}}>{Intl.NumberFormat('en-US', { style: "currency", currency: "USD" }).format(totals.netTotal.toFixed(2))}</td>
+                    <td className='px-4 py-2 font-bold' style={{ 'color': totals.netTotal > 0 ? 'green' : 'red' }}>{Intl.NumberFormat('en-US', { style: "currency", currency: "USD" }).format(totals.netTotal.toFixed(2))}</td>
                 </tr>
 
             </tbody>
