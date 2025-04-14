@@ -20,8 +20,7 @@ function Links() {
     return (
         <div className="flex gap-4">
             <Link name='Dashboard' href='/finance-dashboard/' />
-            {/* <Link name='Breakdown'/> */}
-            {/* <Link name='Compare'/> */}
+            <Link name='Trends' href='/finance-dashboard/trends' />
             <Link name='Transactions' href='/finance-dashboard/transactions'/>
             <Link name='About' href='/finance-dashboard/about'/>
         </div>
