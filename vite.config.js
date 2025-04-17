@@ -12,9 +12,9 @@ export default defineConfig({
         rollupOptions: {
             input: {
                 index: 'src/index.html',
-                trends: 'src/trends.html',
-                transactions: 'src/transactions.html',
-                about: 'src/about.html',
+                trends: 'src/index.html',
+                transactions: 'src/index.html',
+                about: 'src/index.html',
             }
         }
     }
