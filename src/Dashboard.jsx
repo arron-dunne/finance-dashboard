@@ -1,6 +1,6 @@
+import { useState, useEffect, useRef } from 'react'
 import { PieChart } from '@mui/x-charts/PieChart'
 import data from './data.json'
-import { useState, useEffect, useRef } from 'react'
 
 export function Dashboard() {
 
