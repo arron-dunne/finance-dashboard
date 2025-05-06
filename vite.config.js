@@ -11,7 +11,10 @@ export default defineConfig({
         outDir: '../dist', // Output to a directory outside src
         rollupOptions: {
             input: {
-                index: 'src/index.html'
+                index: 'src/index.html',
+                trends: 'src/index.html',
+                transactions: 'src/index.html',
+                about: 'src/index.html',
             }
         }
     }
